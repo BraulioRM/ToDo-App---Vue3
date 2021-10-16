@@ -1,30 +1,77 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
-  <router-view/>
+
+  <h1> To-Do app</h1>  
+
+  <form @submit.prevent= 'addNewTodo'>
+    <label> New Todo </label>
+    <input v-model='newTodo' name="newTodo">
+    <button> Add new todo </button>
+  </form>
+  
+  <button @click="markAllDone"> All done</button>
+  <button @click="removeAll"> Remove all</button>
+  <ul>
+  <li v-for="(todo,index) in todos" :key="todo.id" :class="todo">
+    <h2 :class="{done: todo.done }" @click="toggleDone(todo)">{{todo.content}}</h2>
+  <button @click="removeTodo(index)"> Remove Todo </button>
+  </li>
+  </ul>
+
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+<script>
+import { ref } from 'vue';
+
+const newTodo = ref('');
+const todos = ref([]);
+
+export default{
+  setup(){
+    function addNewTodo(){
+      todos.value.push({
+        id: Date.now(),
+        done: false,
+        content: newTodo.value,
+      })
+      newTodo.value = ''
+  }
+
+    function toggleDone(todo){
+      todo.done =!todo.done
+    }
+
+    function removeTodo(index){
+      todos.value.splice(index,1)
+    }
+
+    function markAllDone(){
+      todos.value.forEach((todo) => todo.done =true);
+    }
+
+    function removeAll(){
+      todos.value = [];
+    }
+
+    return{
+      newTodo,
+      addNewTodo,
+      todos,
+      toggleDone,
+      removeTodo,
+      markAllDone,
+      removeAll,
+    }
+  }
 }
 
-#nav {
-  padding: 30px;
-}
+</script>
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
 
-#nav a.router-link-exact-active {
-  color: #42b983;
+<style scoped>
+.done{
+  text-decoration: line-through;
+}
+.todo{
+  cursor: pointer;
 }
 </style>
